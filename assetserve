@@ -1,16 +1,21 @@
 #!/usr/bin/env node
 
 const express = require("express");
-const app = express();
-
+const cors = require('cors')
 const { readdir } = require('fs/promises');
 const { join, resolve } = require('path');
+
+const app = express();
 
 let PORT = process.env.PORT || process.argv[2] === '-p' ? process.argv[3] : 8080;
 
 let DIR = process.env.DIRECTORY || process.argv[2] === '-p' ? process.argv[4] : process.argv[2];
 DIR = DIR === undefined ? process.cwd() : DIR;
 DIR = resolve(DIR);
+
+app.use(cors({
+  origin: '*',  
+}));
 
 app.get(/\/$/, async (req, res) => {
   const dir = await readdir(join(DIR, req.url));
