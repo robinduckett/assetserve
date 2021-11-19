@@ -1,0 +1,25 @@
+#!/usr/bin/env node
+
+const express = require("express");
+const app = express();
+
+const { readdir } = require('fs/promises');
+const { join, resolve } = require('path');
+
+let PORT = process.env.PORT || process.argv[2] === '-p' ? process.argv[3] : 8080;
+
+let DIR = process.env.DIRECTORY || process.argv[2] === '-p' ? process.argv[4] : process.argv[2];
+DIR = DIR === undefined ? process.cwd() : DIR;
+DIR = resolve(DIR);
+
+app.get(/\/$/, async (req, res) => {
+  const dir = await readdir(join(DIR, req.url));
+  res.status(200);
+  res.json(dir);
+});
+
+app.use(express.static(DIR));
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Listening on: http://0.0.0.0:${PORT}/`);
+});
